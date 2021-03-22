@@ -5,6 +5,8 @@
 #include <QPushButton>
 #include <QGridLayout>
 #include <QLabel>
+#include <iostream>
+
 #include <cmath>
 
 
@@ -22,6 +24,16 @@ public:
 
 
 private:
+    enum operations
+    {
+        PLUS = 0,
+        MINUS,
+        MULT,
+        DIV,
+        UNKNOWN
+    };
+
+
     Ui::MainWindow* _ui;
 
     QVector <QPushButton*> _vectorOfButtons;
@@ -66,9 +78,16 @@ private:
 
     bool _clickSign = true;
     bool _flagPoint = true;
+    bool _flagWriteOnce = true;
 
     int _counterEnteredNum = 0;
 
     void _enterNumbersInLabel(QString number);
+
+    double _result = 0;
+
+
+    operations _currentOperator = operations::UNKNOWN;
+
 };
 #endif // MAINWINDOW_H

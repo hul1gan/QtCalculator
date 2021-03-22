@@ -15,6 +15,7 @@ MainWindow::~MainWindow()
     delete _ui;
 }
 
+
 void MainWindow::_settingWidgets()
 {
     QWidget* central = new QWidget(this);
@@ -28,7 +29,7 @@ void MainWindow::_settingWidgets()
     _showEnterNumber->setText("0");
     _showEnterNumber->setFixedHeight(50);
     _grid->addWidget(_showEnterNumber, 1, 0, 1, -1, Qt::AlignRight);
-    _showEnterNumber->setStyleSheet("background-color: #DCDCDC; font-size: 30px;");
+    _showEnterNumber->setStyleSheet("background-color: #DCDCDC; font-size: 50px;");
 
     _memory = new QLabel(this);
     _memory->setFixedHeight(30);
@@ -119,12 +120,10 @@ void MainWindow::_settingWidgets()
     _grid->addWidget(_buttonPoint, 7, 2);
     _grid->addWidget(_buttonResult, 7, 3);
 
-
-
     for (auto &element: _vectorOfButtons)
     {
         element->setSizePolicy(QSizePolicy::Policy::Expanding, QSizePolicy::Policy::Expanding);
-        element->setStyleSheet("background-color: #DCDCDC; font-size: 25px;");
+        element->setStyleSheet("  color: grey; font-size: 30px;");
 
     }
 
@@ -132,7 +131,6 @@ void MainWindow::_settingWidgets()
 
 void MainWindow::_computing()
 {
-
     connect(_button0, &QPushButton::clicked, this, [&](){
 
         _enterNumbersInLabel("0");
@@ -149,7 +147,7 @@ void MainWindow::_computing()
     });
     connect(_button3, &QPushButton::clicked, this, [&](){
 
-         _enterNumbersInLabel("3");
+        _enterNumbersInLabel("3");
     });
     connect(_button4, &QPushButton::clicked, this, [&](){
 
@@ -158,32 +156,32 @@ void MainWindow::_computing()
     });
     connect(_button5, &QPushButton::clicked, this, [&](){
 
-         _enterNumbersInLabel("5");
+        _enterNumbersInLabel("5");
     });
     connect(_button6, &QPushButton::clicked, this, [&](){
 
-         _enterNumbersInLabel("6");
+        _enterNumbersInLabel("6");
     });
     connect(_button7, &QPushButton::clicked, this, [&](){
 
-         _enterNumbersInLabel("7");
+        _enterNumbersInLabel("7");
     });
     connect(_button8, &QPushButton::clicked, this, [&](){
 
-         _enterNumbersInLabel("8");
+        _enterNumbersInLabel("8");
     });
     connect(_button9, &QPushButton::clicked, this, [&](){
 
-         _enterNumbersInLabel("9");
+        _enterNumbersInLabel("9");
     });
 
     connect(_buttonPoint, &QPushButton::clicked, this, [&](){
 
         if(_flagPoint)
         {
-        _showEnterNumber->setText(_showEnterNumber->text() + QString("."));
-        _memory->setText(_showEnterNumber->text());
-        _flagPoint = false;
+            _showEnterNumber->setText(_showEnterNumber->text() + QString("."));
+            _memory->setText(_showEnterNumber->text());
+            _flagPoint = false;
         }
     });
 
@@ -197,6 +195,7 @@ void MainWindow::_computing()
 
         _counterEnteredNum = 0;
         _flagPoint = true;
+        _flagWriteOnce = true;
 
     });
     connect(_buttonClear, &QPushButton::clicked, this, [&](){
@@ -209,6 +208,7 @@ void MainWindow::_computing()
 
         _counterEnteredNum = 0;
         _flagPoint = true;
+        _flagWriteOnce = true;
     });
     connect(_buttonBackSpace, &QPushButton::clicked, this, [&](){
 
@@ -217,10 +217,11 @@ void MainWindow::_computing()
         _showEnterNumber->setText(currentString);
         _memory->setText(currentString);
 
+
         if(_showEnterNumber->text() == "")
         {
-               _showEnterNumber->setText("0");
-               _memory->setText("0");
+            _showEnterNumber->setText("0");
+            _memory->setText("0");
         }
 
         _counterEnteredNum--;
@@ -231,13 +232,15 @@ void MainWindow::_computing()
 
         if(_clickSign)
         {
-        QString currentString = _showEnterNumber->text();
-        _leftValue = currentString.toDouble();
-        _sign = "+";
-        _showEnterNumber->clear();
-        _memory->setText(_memory->text() + QString("+"));
-        _clickSign =  false;
-        _flagPoint = true;
+
+            QString currentString = _showEnterNumber->text();
+            _leftValue = currentString.toDouble();
+
+            _currentOperator = operations::PLUS;
+            _showEnterNumber->clear();
+            _memory->setText(_memory->text() + QString("+"));
+            _clickSign =  false;
+            _flagPoint = true;
 
         }
     });
@@ -247,13 +250,15 @@ void MainWindow::_computing()
         if(_clickSign)
 
         {
-        QString currentString = _showEnterNumber->text();
-        _leftValue = currentString.toDouble();
-        _sign = "-";
-        _showEnterNumber->clear();
-        _memory->setText(_memory->text() + QString("-"));
-        _clickSign =  false;
-        _flagPoint = true;
+            QString currentString = _showEnterNumber->text();
+            _leftValue = currentString.toDouble();
+
+            _currentOperator = operations::MINUS;
+            _showEnterNumber->clear();
+            _memory->setText(_memory->text() + QString("-"));
+            _clickSign =  false;
+            _flagPoint = true;
+            _currentOperator = operations::MINUS;
         }
     });
 
@@ -261,38 +266,42 @@ void MainWindow::_computing()
 
         if(_clickSign)
         {
-        QString currentString = _showEnterNumber->text();
-        _leftValue = currentString.toDouble();
-        _sign = "/";
-        _showEnterNumber->clear();
-        _memory->setText(_memory->text() + QString("/"));
-        _clickSign =  false;
-        _flagPoint = true;
-       }
+            QString currentString = _showEnterNumber->text();
+
+            _leftValue = currentString.toDouble();
+
+            _currentOperator = operations::DIV;
+            _showEnterNumber->clear();
+            _memory->setText(_memory->text() + QString("/"));
+            _clickSign =  false;
+            _flagPoint = true;
+            _currentOperator = operations::DIV;
+        }
     });
 
     connect(_buttonMult, &QPushButton::clicked, this, [&](){
 
         if(_clickSign)
         {
+            QString currentString = _showEnterNumber->text();
+            _leftValue = currentString.toDouble();
 
-        QString currentString = _showEnterNumber->text();
-        _leftValue = currentString.toDouble();
-        _sign = "*";
-        _showEnterNumber->clear();
-        _memory->setText(_memory->text() + QString("*"));
-        _clickSign =  false;
-        _flagPoint = true;
-}
+            _currentOperator = operations::MULT;
+            _showEnterNumber->clear();
+            _memory->setText(_memory->text() + QString("*"));
+            _clickSign =  false;
+            _flagPoint = true;
+            _currentOperator = operations::MULT;
+        }
     });
 
     connect(_buttonFlipNum, &QPushButton::clicked, this, [&](){
 
         QString currentString = _showEnterNumber->text();
         _leftValue = currentString.toDouble();
-        _sign = "1/";
         _showEnterNumber->clear();
         _showEnterNumber->setText(QString::number(1/_leftValue));
+
 
     });
 
@@ -301,7 +310,6 @@ void MainWindow::_computing()
 
         QString currentString = _showEnterNumber->text();
         _leftValue = currentString.toDouble();
-        _sign = "Square";
         _showEnterNumber->clear();
         _showEnterNumber->setText(QString::number(sqrt(_leftValue)));
 
@@ -322,7 +330,6 @@ void MainWindow::_computing()
 
         QString currentString = _showEnterNumber->text();
         _leftValue = currentString.toDouble();
-        _sign = "Rot";
         _showEnterNumber->clear();
         _showEnterNumber->setText(QString::number(_leftValue * _leftValue));
         _memory->setText(QString::number(_leftValue * _leftValue));
@@ -331,52 +338,56 @@ void MainWindow::_computing()
 
     connect(_buttonPercent, &QPushButton::clicked, this, [&](){
 
-        _showEnterNumber->clear();
-        _showEnterNumber->setText(_memory->text() + QString::number(_rightValue));
-        _memory->setText(_memory->text() + QString::number(_rightValue));
-        double current = _leftValue / 100;
-        _rightValue = current * _rightValue;
-        _sign = "Percent";
-
+        if(_flagWriteOnce)
+        {
+            _memory->setText(_memory->text() + ("%"));
+            _rightValue = (_leftValue / 100) * _rightValue;
+            _flagWriteOnce = false;
+        }
     });
 
     connect(_buttonResult, &QPushButton::clicked, this, [&](){
 
         QString currentString = _showEnterNumber->text();
         _rightValue = currentString.toDouble();
-        _clickSign = true;
 
-        if(_sign == "+" || "Percent")
+
+        _clickSign = true;
+        _flagWriteOnce = true;
+
+        switch (_currentOperator)
+        {
+        case operations::PLUS:
         {
             _showEnterNumber->clear();
             _showEnterNumber->setText(QString::number(_leftValue + _rightValue));
             _memory->setText(QString::number(_leftValue + _rightValue));
+            break;
         }
-        else if(_sign == "-")
+        case operations::MINUS:
         {
             double result = _leftValue - _rightValue;
             _showEnterNumber->clear();
             _showEnterNumber->setText(QString::number(result));
             _memory->setText(QString::number(result));
+            break;
         }
-        else if(_sign == "*")
+        case operations::MULT:
         {
             double result = _leftValue * _rightValue;
             _showEnterNumber->clear();
             _showEnterNumber->setText(QString::number(result));
             _memory->setText(QString::number(result));
+            break;
         }
-        else if(_sign == "/")
+        case operations::DIV:
         {
             double result = _leftValue / _rightValue;
             _showEnterNumber->clear();
             _showEnterNumber->setText(QString::number(result));
             _memory->setText(QString::number(result));
+            break;
         }
-        else
-        {
-            _showEnterNumber->setText("Error");
-
         }
 
     });
@@ -387,20 +398,20 @@ void MainWindow::_enterNumbersInLabel(QString number)
 {
     if(_counterEnteredNum < 20)
     {
-    if(_showEnterNumber->text() == "0")
-    {
+        if(_showEnterNumber->text() == "0")
+        {
             _showEnterNumber->clear();
             _memory->clear();
             _clickSign = true;
-    }
-    else
-    {
-        _counterEnteredNum ++;
-    }
+        }
+        else
+        {
+            _counterEnteredNum ++;
+        }
 
-    _showEnterNumber->setText(_showEnterNumber->text() + number);
-    _memory->setText(_memory->text() + number);
-}
+        _showEnterNumber->setText(_showEnterNumber->text() + number);
+        _memory->setText(_memory->text() + number);
+    }
 }
 
 
