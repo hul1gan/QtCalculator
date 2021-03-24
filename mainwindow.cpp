@@ -19,7 +19,6 @@ MainWindow::~MainWindow()
 void MainWindow::_settingWidgets()
 {
     QWidget* central = new QWidget(this);
-    //central->resize(1000, 500);
     _ui->verticalLayout->addWidget(central);
     this->resize(500, 300);
 
@@ -123,8 +122,7 @@ void MainWindow::_settingWidgets()
     for (auto &element: _vectorOfButtons)
     {
         element->setSizePolicy(QSizePolicy::Policy::Expanding, QSizePolicy::Policy::Expanding);
-        element->setStyleSheet("  color: grey; font-size: 30px;");
-
+        element->setStyleSheet("  color: grey; font-size: 30px; background-color: powderblue;");
     }
 
 }
@@ -165,23 +163,35 @@ void MainWindow::_computing()
     connect(_button7, &QPushButton::clicked, this, [&](){
 
         _enterNumbersInLabel("7");
+
     });
     connect(_button8, &QPushButton::clicked, this, [&](){
 
         _enterNumbersInLabel("8");
+
     });
     connect(_button9, &QPushButton::clicked, this, [&](){
 
         _enterNumbersInLabel("9");
+
     });
 
     connect(_buttonPoint, &QPushButton::clicked, this, [&](){
+
+        QString currentString = _showEnterNumber->text();
+        for(int i = 0; i < currentString.size(); ++i)
+        {
+            if(currentString[i] == ".")
+            {
+                _flagPoint = false;
+                break;
+            }
+        }
 
         if(_flagPoint)
         {
             _showEnterNumber->setText(_showEnterNumber->text() + QString("."));
             _memory->setText(_showEnterNumber->text());
-            _flagPoint = false;
         }
     });
 
@@ -196,6 +206,7 @@ void MainWindow::_computing()
         _counterEnteredNum = 0;
         _flagPoint = true;
         _flagWriteOnce = true;
+        _persentIsOn = false;
 
     });
     connect(_buttonClear, &QPushButton::clicked, this, [&](){
@@ -209,6 +220,7 @@ void MainWindow::_computing()
         _counterEnteredNum = 0;
         _flagPoint = true;
         _flagWriteOnce = true;
+        _persentIsOn = false;
     });
     connect(_buttonBackSpace, &QPushButton::clicked, this, [&](){
 
@@ -239,8 +251,10 @@ void MainWindow::_computing()
             _currentOperator = operations::PLUS;
             _showEnterNumber->clear();
             _memory->setText(_memory->text() + QString("+"));
+
             _clickSign =  false;
             _flagPoint = true;
+            _flagResult = true;
 
         }
     });
@@ -252,12 +266,15 @@ void MainWindow::_computing()
         {
             QString currentString = _showEnterNumber->text();
             _leftValue = currentString.toDouble();
-
             _currentOperator = operations::MINUS;
+
             _showEnterNumber->clear();
             _memory->setText(_memory->text() + QString("-"));
+
             _clickSign =  false;
             _flagPoint = true;
+            _flagResult = true;
+
             _currentOperator = operations::MINUS;
         }
     });
@@ -269,12 +286,15 @@ void MainWindow::_computing()
             QString currentString = _showEnterNumber->text();
 
             _leftValue = currentString.toDouble();
-
             _currentOperator = operations::DIV;
+
             _showEnterNumber->clear();
             _memory->setText(_memory->text() + QString("/"));
+
             _clickSign =  false;
             _flagPoint = true;
+            _flagResult = true;
+
             _currentOperator = operations::DIV;
         }
     });
@@ -285,12 +305,15 @@ void MainWindow::_computing()
         {
             QString currentString = _showEnterNumber->text();
             _leftValue = currentString.toDouble();
-
             _currentOperator = operations::MULT;
+
             _showEnterNumber->clear();
             _memory->setText(_memory->text() + QString("*"));
+
             _clickSign =  false;
             _flagPoint = true;
+            _flagResult = true;
+
             _currentOperator = operations::MULT;
         }
     });
@@ -301,7 +324,6 @@ void MainWindow::_computing()
         _leftValue = currentString.toDouble();
         _showEnterNumber->clear();
         _showEnterNumber->setText(QString::number(1/_leftValue));
-
 
     });
 
@@ -330,6 +352,7 @@ void MainWindow::_computing()
 
         QString currentString = _showEnterNumber->text();
         _leftValue = currentString.toDouble();
+
         _showEnterNumber->clear();
         _showEnterNumber->setText(QString::number(_leftValue * _leftValue));
         _memory->setText(QString::number(_leftValue * _leftValue));
@@ -338,30 +361,52 @@ void MainWindow::_computing()
 
     connect(_buttonPercent, &QPushButton::clicked, this, [&](){
 
-        if(_flagWriteOnce)
+        if(!_clickSign)
         {
-            _memory->setText(_memory->text() + ("%"));
-            _rightValue = (_leftValue / 100) * _rightValue;
-            _flagWriteOnce = false;
+            if(_flagWriteOnce)
+            {
+                _memory->setText(_memory->text() + ("%"));
+
+                _flagWriteOnce = false;
+                _persentIsOn = true;
+
+            }
         }
     });
 
     connect(_buttonResult, &QPushButton::clicked, this, [&](){
 
         QString currentString = _showEnterNumber->text();
-        _rightValue = currentString.toDouble();
-
 
         _clickSign = true;
-        _flagWriteOnce = true;
+        _flagWriteOnce = false;
+
+        if(_flagResult)
+        {
+       _rightValue = currentString.toDouble();
+        }
+
+        _flagResult = false;
+
+        if(_persentIsOn)
+        {
+             _rightValue = (_leftValue / 100) * _rightValue;
+        }
+
+        _persentIsOn = false;
 
         switch (_currentOperator)
         {
         case operations::PLUS:
-        {
+         {
+             double result = _leftValue + _rightValue;
             _showEnterNumber->clear();
-            _showEnterNumber->setText(QString::number(_leftValue + _rightValue));
-            _memory->setText(QString::number(_leftValue + _rightValue));
+            _showEnterNumber->setText(QString::number(result));
+            _memory->setText(QString::number(result));
+
+            QString currentString = _showEnterNumber->text();
+            _leftValue = currentString.toDouble();
+
             break;
         }
         case operations::MINUS:
@@ -412,6 +457,14 @@ void MainWindow::_enterNumbersInLabel(QString number)
         _showEnterNumber->setText(_showEnterNumber->text() + number);
         _memory->setText(_memory->text() + number);
     }
+}
+
+void MainWindow::_swap(double &first, double &second)
+{
+    double current = 0;
+    current = first;
+    first = second;
+    second = current;
 }
 
 

@@ -79,10 +79,13 @@ private:
     bool _clickSign = true;
     bool _flagPoint = true;
     bool _flagWriteOnce = true;
+    bool _flagResult = true;
+    bool _persentIsOn = false;
 
     int _counterEnteredNum = 0;
 
     void _enterNumbersInLabel(QString number);
+    void _swap(double &first, double &second);
 
     double _result = 0;
 
